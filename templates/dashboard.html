@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Executive Analytics Dashboard</title>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; 
+            margin: 0; 
+            background-color: #f8fafc; 
+            color: #1e293b; 
+        }
+        
+        /* Modern Header */
+        .top-nav { 
+            background: #1a1a2e; 
+            padding: 15px 40px; 
+            color: white; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+        }
+        .top-nav h2 { margin: 0; font-size: 18px; font-weight: 600; letter-spacing: 0.5px; }
+        
+        .main-container { max-width: 1100px; margin: 40px auto; padding: 0 20px; }
+        
+        /* Dashboard Header & Launch Button */
+        .dashboard-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 30px; 
+        }
+        .dashboard-header h1 { margin: 0; font-size: 26px; color: #0f172a; }
+        .dashboard-header p { margin: 5px 0 0 0; font-size: 14px; color: #64748b; }
+        
+        .launch-btn { 
+            background-color: #8e44ad; 
+            color: white; 
+            text-decoration: none; 
+            font-weight: 600; 
+            padding: 12px 24px; 
+            border-radius: 6px; 
+            font-size: 14px; 
+            transition: background-color 0.2s, transform 0.1s; 
+            box-shadow: 0 4px 6px rgba(142, 68, 173, 0.2); 
+            border: none;
+            cursor: pointer;
+        }
+        .launch-btn:hover { background-color: #732d91; }
+        .launch-btn:active { transform: scale(0.98); }
+
+        .download-btn { 
+            background-color: #1e8449; 
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px; 
+            border-radius: 6px;
+            font-size: 13px; 
+            font-weight: bold;
+            transition: background-color 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+        .download-btn:hover { background-color: #145a32; }
+
+        /* Stats Grid */
+        .flex-row { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; }
+        .metric-card { 
+            background: white; 
+            border: 1px solid #e2e8f0; 
+            border-radius: 12px; 
+            padding: 25px; 
+            flex: 1; 
+            min-width: 150px; 
+            text-align: center; 
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            transition: transform 0.2s ease;
+        }
+        .metric-card:hover { transform: translateY(-3px); }
+        .metric-value { font-size: 32px; font-weight: 700; margin-bottom: 5px; }
+        .metric-label { font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+        
+        .roi-card-green { border: 2px solid #1e8449; background: #f0fdf4; }
+        
+        /* Table Styling */
+        .table-container { 
+            background: white; 
+            border: 1px solid #e2e8f0; 
+            border-radius: 12px; 
+            padding: 25px; 
+            margin-bottom: 40px; 
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+        .table-container h3 { margin: 0 0 15px; font-size: 18px; color: #0f172a; }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        th { text-align: right; padding: 12px; border-bottom: 2px solid #cbd5e1; color: #475569; font-size: 12px; text-transform: uppercase; }
+        th:first-child { text-align: left; }
+        td { padding: 14px 12px; border-bottom: 1px solid #e2e8f0; text-align: right; color: #334155; }
+        td:first-child { text-align: left; font-weight: 500; color: #0f172a; }
+        .td-success { color: #1e8449; font-weight: 700; }
+        .table-row:hover { background-color: #f8fafc; }
+
+        /* API Sandbox Styling */
+        .sandbox-panel {
+            background: white; 
+            border: 1px solid #e2e8f0; 
+            border-radius: 12px; 
+            padding: 30px; 
+            display: flex; 
+            gap: 30px; 
+            align-items: center; 
+            flex-wrap: wrap;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+        .sandbox-input {
+            width: 100%; 
+            padding: 12px; 
+            margin-bottom: 10px; 
+            border: 1px solid #cbd5e1; 
+            border-radius: 6px; 
+            font-size: 13px; 
+            box-sizing: border-box;
+            background-color: #f8fafc;
+            color: #334155;
+        }
+        .sandbox-btn {
+            background-color: #0284c7; 
+            color: white; 
+            border: none; 
+            cursor: pointer; 
+            font-weight: 600; 
+            padding: 12px; 
+            width: 100%; 
+            border-radius: 6px; 
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+        .sandbox-btn:hover { background-color: #0369a1; }
+        .code-output { 
+            display: none; 
+            background: #0f172a; 
+            color: #38bdf8; 
+            padding: 20px; 
+            border-radius: 8px; 
+            overflow-x: auto; 
+            font-family: monospace; 
+            font-size: 13px; 
+            margin-top: 15px; 
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5); 
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-nav">
+    <h2>🧬 AI Conference Intelligence Platform</h2>
+</div>
+
+<div class="main-container">
+    
+    <div class="dashboard-header">
+        <div>
+            <h1>Executive Run Summary</h1>
+            <p>Live Benchmark ROI & Pipeline Metrics</p>
+        </div>
+        <div style="display: flex; gap: 15px;">
+            <a href="/api/export-bulk-agenda" target="_blank" class="download-btn">📥 Download Full CSV</a>
+            <a href="/workspace" class="launch-btn">🚀 Launch Intelligence Workspace</a>
+        </div>
+    </div>
+
+    <div class="flex-row">
+        <div class="metric-card">
+            <div class="metric-value" style="color:#1a1a2e">{{ total_abs }}</div>
+            <div class="metric-label">Abstracts Processed</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-value" style="color:#c0392b">{{ high_signal }}</div>
+            <div class="metric-label">HIGH Signal Found</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-value" style="color:#2471a3">{{ oral_count }}</div>
+            <div class="metric-label">Oral Presentations</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-value" style="color:#8e44ad">{{ poster_count }}</div>
+            <div class="metric-label">Poster Presentations</div>
+        </div>
+    </div>
+
+    <div class="flex-row">
+        <div class="metric-card roi-card-green">
+            <div class="metric-value" style="color:#1e8449">${{ savings_azure }}</div>
+            <div class="metric-label">Total Saved vs Legacy Vendor | ROI {{ roi_azure_pct }}%</div>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <h3>Vendor Benchmark - Per Conference</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Conference</th>
+                    <th>Legacy Cost</th>
+                    <th>AI Pipeline Cost</th>
+                    <th>Savings</th>
+                    <th>ROI %</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for conf in conferences %}
+                <tr class="table-row">
+                    <td>{{ conf.Conference }}</td>
+                    <td>${{ "{:,.0f}".format(conf.Lavo_Cost_USD) }}</td>
+                    <td>${{ "{:,.2f}".format(conf.LLM_Cost_Azure_USD) }}</td>
+                    <td class="td-success">${{ "{:,.0f}".format(conf.Savings_Azure_USD) }}</td>
+                    <td class="td-success">{{ conf.ROI_Pct_Azure }}%</td>
+                </tr>
+                {% endfor %}
+                <tr style="border-top:2px solid #1a1a2e;font-weight:700; background-color: #f1f5f9;">
+                    <td>TOTAL (6 conferences)</td>
+                    <td>${{ total_lavo }}</td>
+                    <td>${{ total_azure }}</td>
+                    <td class="td-success">${{ savings_azure }}</td>
+                    <td class="td-success">{{ roi_azure_pct }}%</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div style="margin-bottom: 50px;">
+        <div class="sandbox-panel">
+            <div style="flex: 1; min-width: 250px;">
+                <div style="font-size: 32px; margin-bottom: 10px;">🔬</div>
+                <h3 style="margin: 0 0 5px 0; font-size: 18px; color: #0f172a;">API Sandbox: Synthetic Data</h3>
+                <p style="margin: 0; font-size: 13px; color: #64748b;">Generate mock clinical abstracts on the fly to test the Groq LLM endpoints.</p>
+            </div>
+            <div style="flex: 2; min-width: 300px; display: flex; flex-direction: column;">
+                <input type="text" id="topic" class="sandbox-input" placeholder="e.g., NSCLC pembrolizumab resistance" value="NSCLC pembrolizumab resistance">
+                <button class="sandbox-btn" onclick="generateData()">Generate Mock Data via API</button>
+            </div>
+        </div>
+        <pre id="synth-output" class="code-output"></pre>
+    </div>
+
+</div>
+
+<script>
+    async function generateData() {
+        const outputEl = document.getElementById('synth-output');
+        outputEl.style.display = 'block';
+        outputEl.innerText = "⏳ Generating synthetic data via Groq LLM... Please wait...";
+        
+        const topic = document.getElementById('topic').value;
+        try {
+            const response = await fetch('/api/generate-synthetic', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ topic: topic, count: 2 })
+            });
+            const result = await response.json();
+            outputEl.innerText = JSON.stringify(result, null, 2);
+        } catch (err) {
+            outputEl.innerText = "❌ Error calling API: " + err.message;
+        }
+    }
+</script>
+
+</body>
+</html>
